@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import static br.edu.ulbra.election.voter.utils.ValidateVoterInput.validateInput;
+import static br.edu.ulbra.election.voter.utils.ValidateVoterInput.validateLengthVotersName;
 
 @Service
 public class VoterService {
@@ -44,6 +45,7 @@ public class VoterService {
 
     public VoterOutput create(VoterInput voterInput) {
         validateInput(voterInput, false);
+        validateLengthVotersName(voterInput, 5);
         Voter voter = modelMapper.map(voterInput, Voter.class);
         voter.setPassword(passwordEncoder.encode(voter.getPassword()));
         voter = voterRepository.save(voter);
@@ -68,6 +70,7 @@ public class VoterService {
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
         validateInput(voterInput, true);
+        validateLengthVotersName(voterInput, 5);
 
         Voter voter = voterRepository.findById(voterId).orElse(null);
         if (voter == null){
