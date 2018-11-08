@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static br.edu.ulbra.election.voter.utils.ValidateVoterInput.validateInput;
-import static br.edu.ulbra.election.voter.utils.ValidateVoterInput.validateLastVotersName;
+import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateInput;
+import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateLastVotersName;
 
 @Service
 public class VoterService {

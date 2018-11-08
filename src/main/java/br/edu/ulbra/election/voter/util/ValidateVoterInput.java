@@ -1,9 +1,11 @@
-package br.edu.ulbra.election.voter.utils;
+package br.edu.ulbra.election.voter.util;
 
 import br.edu.ulbra.election.voter.exception.GenericOutputException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
-import br.edu.ulbra.election.voter.model.Voter;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ValidateVoterInput {
     private ValidateVoterInput(){}
@@ -40,22 +42,27 @@ public class ValidateVoterInput {
      * @throws GenericOutputException if name goes wrong.
      */
     public static void validateLastVotersName(VoterInput voterInput){
-        String[] word = voterInput.getName().trim().split(" ");
-        if(word.length < 2){
+        if(trimInsideOut(voterInput.getName()).split(" ").length < 2){
            throw new GenericOutputException("The name must have at least a last name.");
         }
-        if(lengthVotersName(voterInput) < 5) {
+        if(trimInsideOut(voterInput.getName()).length() < 5) {
             throw new GenericOutputException("The name must have at least 5 letters.");
         }
     }
 
     /**
-     * Get the length of the voter's name (already trimmed)
-     * @param voterInput object which case it is the name to be searched.
-     * @return an integer number that is the length of the voter's name
+     * Removes blank spaces in the beginning and the end
+     * Replaces multiple blank spaces,if exists, to a single one
+     *
+     * @param word any string
+     * @return trimmed string and treated at all
      */
-    public static int lengthVotersName(VoterInput voterInput){
-        return voterInput.getName().trim().length();
-    }
+    public static String trimInsideOut(String word){
+        word = word.trim();
+        Pattern pattern = Pattern.compile("\\s+");
+        Matcher matcher = pattern.matcher(word);
+        word = matcher.replaceAll(" ");
 
+        return word;
+    }
 }
