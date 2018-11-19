@@ -18,6 +18,7 @@ import java.util.List;
 
 import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateInput;
 import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateLastVotersName;
+import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateVotersEmail;
 
 @Service
 public class VoterService {
@@ -46,6 +47,7 @@ public class VoterService {
     public VoterOutput create(VoterInput voterInput) {
         validateInput(voterInput, false);
         validateLastVotersName(voterInput);
+        validateVotersEmail(voterInput, null, false);
         Voter voter = modelMapper.map(voterInput, Voter.class);
         voter.setPassword(passwordEncoder.encode(voter.getPassword()));
         voter = voterRepository.save(voter);
@@ -70,6 +72,7 @@ public class VoterService {
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
         validateInput(voterInput, true);
+        validateVotersEmail(voterInput, voterId, true);
         validateLastVotersName(voterInput);
 
         Voter voter = voterRepository.findById(voterId).orElse(null);
