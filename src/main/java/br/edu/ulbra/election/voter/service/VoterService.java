@@ -1,5 +1,6 @@
 package br.edu.ulbra.election.voter.service;
 
+import br.edu.ulbra.election.voter.client.VoteClientService;
 import br.edu.ulbra.election.voter.exception.GenericOutputException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
 import br.edu.ulbra.election.voter.model.Voter;
@@ -16,14 +17,13 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateInput;
-import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateLastVotersName;
-import static br.edu.ulbra.election.voter.util.ValidateVoterInput.validateVotersEmail;
+import static br.edu.ulbra.election.voter.util.ValidateVoterInput.*;
 
 @Service
 public class VoterService {
 
     private final VoterRepository voterRepository;
+    private final VoteClientService voteClientService;
 
     private final ModelMapper modelMapper;
 
@@ -33,8 +33,9 @@ public class VoterService {
     private static final String MESSAGE_VOTER_NOT_FOUND = "Voter not found";
 
     @Autowired
-    public VoterService(VoterRepository voterRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
+    public VoterService(VoterRepository voterRepository, VoteClientService voteClientService, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
         this.voterRepository = voterRepository;
+        this.voteClientService = voteClientService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -98,6 +99,8 @@ public class VoterService {
         if (voter == null){
             throw new GenericOutputException(MESSAGE_VOTER_NOT_FOUND);
         }
+
+        validateVotersAlreadyVote(null);
 
         voterRepository.delete(voter);
 

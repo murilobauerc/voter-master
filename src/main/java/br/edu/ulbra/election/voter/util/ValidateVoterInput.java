@@ -1,9 +1,11 @@
 package br.edu.ulbra.election.voter.util;
 
+import br.edu.ulbra.election.voter.client.VoteClientService;
 import br.edu.ulbra.election.voter.exception.GenericOutputException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
 import br.edu.ulbra.election.voter.model.Voter;
 import br.edu.ulbra.election.voter.repository.VoterRepository;
+import feign.FeignException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,12 @@ import java.util.regex.Pattern;
 @Service
 public class ValidateVoterInput {
     private static VoterRepository voterRepository;
+    private static VoteClientService voteClientService;
 
     @Autowired
-    private ValidateVoterInput(VoterRepository voterRepository){
+    private ValidateVoterInput(VoterRepository voterRepository, VoteClientService voteClientService) {
         this.voterRepository = voterRepository;
+        this.voteClientService = voteClientService;
     }
 
 
@@ -75,6 +79,14 @@ public class ValidateVoterInput {
             }
         }
     }
+
+    public static void validateVotersAlreadyVote(Long voterId) throws FeignException {
+        if (voteClientService.getById(voterId) != null) {
+            throw new GenericOutputException("Voter already voted");
+        }
+    }
+
+
 
     /**
      * Removes blank spaces in the beginning and the end
