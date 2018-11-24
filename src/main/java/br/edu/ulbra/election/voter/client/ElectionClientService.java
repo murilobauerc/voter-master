@@ -1,5 +1,6 @@
 package br.edu.ulbra.election.voter.client;
 
+
 import br.edu.ulbra.election.voter.output.v1.GenericOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -8,22 +9,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
-public class VoteClientService {
-    private final VoteClient voteClient;
+public class ElectionClientService {
+    private final ElectionClient electionClient;
 
     @Autowired
-    public VoteClientService(VoteClient voteClient){
-        this.voteClient = voteClient;
+    public ElectionClientService(ElectionClient electionClient){
+        this.electionClient = electionClient;
     }
 
     public GenericOutput getById(Long id) {
-        return this.voteClient.getById(id);
+        return this.electionClient.getById(id);
     }
 
-    @FeignClient(value="candidate-service", url="${url.candidate-service}")
-    private interface VoteClient {
-        @GetMapping("/v1/vote/{voteId}")
-        GenericOutput getById(@PathVariable(name = "voteId") Long Id);
-
+    @FeignClient(value="election-service", url="${url.election-service}")
+    private interface ElectionClient {
+        @GetMapping("/v1/vote/{voterId}")
+        GenericOutput getById(@PathVariable(name = "voteId") Long voterId);
     }
 }

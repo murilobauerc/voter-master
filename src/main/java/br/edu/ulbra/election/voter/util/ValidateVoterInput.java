@@ -1,6 +1,6 @@
 package br.edu.ulbra.election.voter.util;
 
-import br.edu.ulbra.election.voter.client.VoteClientService;
+import br.edu.ulbra.election.voter.client.ElectionClientService;
 import br.edu.ulbra.election.voter.exception.GenericOutputException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
 import br.edu.ulbra.election.voter.model.Voter;
@@ -16,12 +16,12 @@ import java.util.regex.Pattern;
 @Service
 public class ValidateVoterInput {
     private static VoterRepository voterRepository;
-    private static VoteClientService voteClientService;
+    private static ElectionClientService electionClientService;
 
     @Autowired
-    private ValidateVoterInput(VoterRepository voterRepository, VoteClientService voteClientService) {
+    private ValidateVoterInput(VoterRepository voterRepository, ElectionClientService electionClientService) {
         this.voterRepository = voterRepository;
-        this.voteClientService = voteClientService;
+        this.electionClientService = electionClientService;
     }
 
 
@@ -80,13 +80,17 @@ public class ValidateVoterInput {
         }
     }
 
-    public static void validateVotersAlreadyVote(Long voterId) throws FeignException {
-        if (voteClientService.getById(voterId) != null) {
-            throw new GenericOutputException("Voter already voted");
+    public static void validateVotersAlreadyVote(Long id) {
+        try {
+            if (electionClientService.getById(id) != null) {
+                throw new GenericOutputException("Voter already voted");
+            }
+        } catch (FeignException e) {
+            if(e.status() == 500){
+                throw new GenericOutputException("Invalid voter.");
+            }
         }
     }
-
-
 
     /**
      * Removes blank spaces in the beginning and the end
