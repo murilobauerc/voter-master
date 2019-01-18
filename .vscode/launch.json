@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - VoterApplication",
+            "request": "launch",
+            "mainClass": "br.edu.ulbra.election.voter.VoterApplication",
+            "projectName": "voter"
+        }
+    ]
+}

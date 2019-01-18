@@ -1,6 +1,7 @@
 package br.edu.ulbra.election.voter.util;
 
 import br.edu.ulbra.election.voter.client.ElectionClientService;
+import br.edu.ulbra.election.voter.exception.CannotCreateVoterWithExistentEmail;
 import br.edu.ulbra.election.voter.exception.GenericOutputException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
 import br.edu.ulbra.election.voter.model.Voter;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 public class ValidateVoterInput {
     private static VoterRepository voterRepository;
     private static ElectionClientService electionClientService;
+    private static final String REGEX_EMAIL = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+\\.[a-z]+(\\.[a-z]+)?$";
 
     @Autowired
     private ValidateVoterInput(VoterRepository voterRepository, ElectionClientService electionClientService) {
@@ -67,7 +69,7 @@ public class ValidateVoterInput {
         }
     }
 
-    public static void validateVotersEmail(VoterInput voterInput, Long voterId, boolean isUpdate) {
+    public static void validateSameVotersEmail(VoterInput voterInput, Long voterId, boolean isUpdate) throws CannotCreateVoterWithExistentEmail {
         if (isUpdate) {
             Voter voter = voterRepository.findById(voterId).orElse(null);
             if (voter != null) {
@@ -105,5 +107,17 @@ public class ValidateVoterInput {
         Matcher matcher = pattern.matcher(word);
         word = matcher.replaceAll(" ");
         return word;
+    }
+
+
+    /**
+     * Check if the word contains only allowed characters
+     * a-z A-Z 0-9 () @ # + & _ / \ | [ ] space
+     *
+     * @param word string
+     * @return false if contains any other character, else true
+     */
+    public static boolean verifyValidEmail(String word) {
+        return Pattern.matches(REGEX_EMAIL, word);
     }
 }

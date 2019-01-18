@@ -1,0 +1,4 @@
+applications:
+  - name: voter-master
+    path: # java build - aqui vai o .jar
+    buildpack: java_buildpack_offline

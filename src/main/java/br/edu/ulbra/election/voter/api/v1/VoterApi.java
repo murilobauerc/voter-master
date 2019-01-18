@@ -1,5 +1,7 @@
 package br.edu.ulbra.election.voter.api.v1;
 
+import br.edu.ulbra.election.voter.exception.CannotCreateVoterWithExistentEmail;
+import br.edu.ulbra.election.voter.exception.InvalidEmailException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
 import br.edu.ulbra.election.voter.output.v1.GenericOutput;
 import br.edu.ulbra.election.voter.output.v1.VoterOutput;
@@ -35,13 +37,15 @@ public class VoterApi {
 
     @PostMapping("/")
     @ApiOperation(value = "Create new voter")
-    public VoterOutput create(@RequestBody VoterInput voterInput){
+        public VoterOutput create(@RequestBody VoterInput voterInput)
+            throws CannotCreateVoterWithExistentEmail, InvalidEmailException {
         return voterService.create(voterInput);
     }
 
     @PutMapping("/{voterId}")
     @ApiOperation(value = "Update voter")
-    public VoterOutput update(@PathVariable Long voterId, @RequestBody VoterInput voterInput){
+        public VoterOutput update(@PathVariable Long voterId, @RequestBody VoterInput voterInput)
+            throws CannotCreateVoterWithExistentEmail, InvalidEmailException {
         return voterService.update(voterId, voterInput);
     }
 

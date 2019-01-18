@@ -1,9 +1,9 @@
 server:
-  port: 8081
+  port: 8000
 
 spring:
   datasource:
-    url: jdbc:h2:file:/tmp/db/voter
+    url: jdbc:h2:file:./data/db/voter
     platform: h2
     username: sa
     driver-class-name: org.h2.Driver

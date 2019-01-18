@@ -1,12 +1,15 @@
 package br.edu.ulbra.election.voter.service;
 
 import br.edu.ulbra.election.voter.client.ElectionClientService;
+import br.edu.ulbra.election.voter.exception.CannotCreateVoterWithExistentEmail;
 import br.edu.ulbra.election.voter.exception.GenericOutputException;
+import br.edu.ulbra.election.voter.exception.InvalidEmailException;
 import br.edu.ulbra.election.voter.input.v1.VoterInput;
 import br.edu.ulbra.election.voter.model.Voter;
 import br.edu.ulbra.election.voter.output.v1.GenericOutput;
 import br.edu.ulbra.election.voter.output.v1.VoterOutput;
 import br.edu.ulbra.election.voter.repository.VoterRepository;
+import br.edu.ulbra.election.voter.util.ValidateVoterInput;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -45,10 +48,15 @@ public class VoterService {
         return modelMapper.map(voterRepository.findAll(), voterOutputListType);
     }
 
-    public VoterOutput create(VoterInput voterInput) {
+    public VoterOutput create(VoterInput voterInput) throws CannotCreateVoterWithExistentEmail, InvalidEmailException {
         validateInput(voterInput, false);
         validateLastVotersName(voterInput);
-        validateVotersEmail(voterInput, null, false);
+        if(!ValidateVoterInput.verifyValidEmail(voterInput.getEmail())){
+            throw new InvalidEmailException("The email contains invalid characters.");
+        }
+
+
+        validateSameVotersEmail(voterInput, null, false);
         Voter voter = modelMapper.map(voterInput, Voter.class);
         voter.setPassword(passwordEncoder.encode(voter.getPassword()));
         voter = voterRepository.save(voter);
@@ -68,12 +76,15 @@ public class VoterService {
         return modelMapper.map(voter, VoterOutput.class);
     }
 
-    public VoterOutput update(Long voterId, VoterInput voterInput) {
+    public VoterOutput update(Long voterId, VoterInput voterInput) throws CannotCreateVoterWithExistentEmail, InvalidEmailException {
         if (voterId == null){
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
         validateInput(voterInput, true);
-        validateVotersEmail(voterInput, voterId, true);
+        if(!ValidateVoterInput.verifyValidEmail(voterInput.getEmail())){
+            throw new InvalidEmailException("The email contains invalid characters.");
+        }
+        validateSameVotersEmail(voterInput, voterId, true);
         validateLastVotersName(voterInput);
 
         Voter voter = voterRepository.findById(voterId).orElse(null);
